@@ -82,7 +82,11 @@ static void initialize_console()
     /**< Configure UART. Note that REF_TICK is used so that the baud rate remains
      * correct while APB frequency is changing in light sleep mode. */
     const uart_config_t uart_config = {
+#ifdef CONFIG_ESP_CONSOLE_UART_BAUDRATE
         .baud_rate    = CONFIG_ESP_CONSOLE_UART_BAUDRATE,
+#else
+        .baud_rate    = 115200,
+#endif
         .data_bits    = UART_DATA_8_BITS,
         .parity       = UART_PARITY_DISABLE,
         .stop_bits    = UART_STOP_BITS_1,
@@ -176,7 +180,7 @@ mdf_err_t mdebug_console_init()
 {
     /** Wait until uart tx full empty and the last char send ok. */
     fflush(stdout);
-    uart_tx_wait_idle(CONSOLE_UART_NUM);
+    uart_wait_tx_done(CONSOLE_UART_NUM, CONSOLE_UART_NUM);
 
 #if CONFIG_MDEBUG_STORE_HISTORY
     initialize_filesystem();
